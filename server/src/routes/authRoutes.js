@@ -24,7 +24,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.post("signin", async (req, res) => {
+router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(422).send({
@@ -45,7 +45,7 @@ router.post("signin", async (req, res) => {
   try {
     await user.comparePassword(password);
     const token = jwt.sign({ userId: user._id }, "IronClad1607");
-    res.send({token});
+    res.send({ token });
   } catch (err) {
     return res.status(422).send({
       error: "Invalid email or password!",
