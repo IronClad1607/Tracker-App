@@ -1,6 +1,7 @@
+const { mongoURI } = require("../config");
 const express = require("express");
 const mongoose = require("mongoose");
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 const authRoutes = require("./routes/authRoutes");
 
 const app = express();
@@ -8,10 +9,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(authRoutes);
 
-const mongoUri =
-  "mongodb+srv://abc:abc@cluster0.iml6k.mongodb.net/<dbname>?retryWrites=true&w=majorit";
-
-mongoose.connect(mongoUri, {
+mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useCreateIndex: true,
 });
