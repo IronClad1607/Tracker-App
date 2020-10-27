@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const { use } = require("../routes/authRoutes");
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -11,5 +13,44 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
 });
+
+userSchema.pre("save", function () {
+  const user = this;
+  if (!user.isModified("password")) {
+    return next();
+  }
+
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) {
+      return next(err);
+    }
+
+    bcrypt.hash(user.password, salt, (err, hash) => {
+      if (err) {
+        return next(err);
+      }
+      user.password = hash;
+      next();
+    });
+  });
+});
+
+userSchema.method.comparePassword = function (userPassword) {
+  const user = this;
+
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(userPassword, user.password, (err, isMatch) => {
+      if (err) {
+        return reject(err);
+      }
+
+      if (!isMatch) {
+        return reject(false);
+      }
+
+      resolve(true);
+    });
+  });
+};
 
 mongoose.model("User", userSchema);
